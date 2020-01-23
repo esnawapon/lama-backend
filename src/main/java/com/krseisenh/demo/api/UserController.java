@@ -8,12 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.HashMap;
 
-@RequestMapping("api/v1/words")
+@RequestMapping("api/v1/users")
 @RestController
-public class WordController {
+public class UserController {
     @Autowired
     private WordRepository repository;
 
@@ -35,23 +34,13 @@ public class WordController {
 
     @PutMapping(path = "{id}")
     public void updateWordById(@PathVariable("id") ObjectId id, @Valid @NotNull @RequestBody Word word) {
-        Word updateWord = repository.findBy_id(id);
-        if (updateWord != null) {
-            updateWord.set_id(id);
-            updateWord.setWord(word.word);
-            updateWord.setDescription(word.description);
-            updateWord.setQuote(word.quote);
-            updateWord.setUpdatedAt(new Date());
-            repository.save(updateWord);
-        } else {
-          return;
-        }
+        word.set_id(id);
+        repository.save(word);
     }
 
     @PostMapping
     public Word createWord(@Valid @RequestBody Word word) {
         word.set_id(ObjectId.get());
-        word.setCreatedAt(new Date());
         repository.save(word);
         return word;
     }

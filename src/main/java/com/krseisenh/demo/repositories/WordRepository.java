@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface WordRepository extends MongoRepository<Word, String> {
     Word findBy_id(ObjectId _id);
+
+    Word findByWord(String word);
 }
