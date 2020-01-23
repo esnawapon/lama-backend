@@ -45,11 +45,12 @@ public class WordController {
     }
 
     @PostMapping
-    public Word createWord(@Valid @RequestBody Word word) {
+    public HashMap<String, Object> createWord(@Valid @RequestBody Word word) {
         word.set_id(ObjectId.get());
         word.setCreatedAt(new Date());
         repository.save(word);
-        return word;
+        HashMap<String, Object> response = generateResponse(word);
+        return response;
     }
 
     @DeleteMapping(path = "{id}")
@@ -57,7 +58,7 @@ public class WordController {
         repository.delete(repository.findBy_id(id));
     }
 
-    public HashMap<String, Object> generateResponse(Object data) {
+    private HashMap<String, Object> generateResponse(Object data) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("result", data);
         map.put("message", "OK");

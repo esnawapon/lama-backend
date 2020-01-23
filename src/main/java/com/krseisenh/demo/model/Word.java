@@ -13,7 +13,7 @@ public class Word {
     public String word;
     public String quote;
     public String description;
-    private String user_id;
+    public String user_id;
     public Date createdAt;
     public Date updatedAt;
 
