@@ -13,14 +13,17 @@ public class Word {
     public String word;
     public String quote;
     public String description;
+    private String user_id;
     public Date createdAt;
     public Date updatedAt;
 
-    public Word(ObjectId _id, String word, String quote, String description, Date createdAt, Date updatedAt) {
+    public Word(ObjectId _id, String word, String quote, String description, String user_id, Date createdAt,
+            Date updatedAt) {
         this._id = _id;
         this.word = word;
         this.quote = quote;
         this.description = description;
+        this.user_id = user_id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -57,7 +60,7 @@ public class Word {
         this.description = description;
     }
 
-    public  void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -65,11 +68,15 @@ public class Word {
         return createdAt;
     }
 
-    public  void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
     public Date getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getUserId() {
+        return user_id;
     }
 }

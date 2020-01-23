@@ -18,19 +18,15 @@ public class WordController {
     private WordRepository repository;
 
     @GetMapping
-    public HashMap<String, Object> getAllWord() {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("result", repository.findAll());
-        map.put("message", "OK");
-        return map;
+    public HashMap<String, Object> getAllWords() {
+        HashMap<String, Object> ressponse = generateResponse(repository.findAll());
+        return ressponse;
     }
 
     @GetMapping(path = "{id}")
     public HashMap<String, Object> getWordById(@PathVariable("id") ObjectId id) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("result", repository.findBy_id(id));
-        map.put("message", "OK");
-        return map;
+        HashMap<String, Object> ressponse = generateResponse(repository.findBy_id(id));
+        return ressponse;
     }
 
     @PutMapping(path = "{id}")
@@ -44,7 +40,7 @@ public class WordController {
             updateWord.setUpdatedAt(new Date());
             repository.save(updateWord);
         } else {
-          return;
+            return;
         }
     }
 
@@ -59,5 +55,12 @@ public class WordController {
     @DeleteMapping(path = "{id}")
     public void deleteWord(@PathVariable ObjectId id) {
         repository.delete(repository.findBy_id(id));
+    }
+
+    public HashMap<String, Object> generateResponse(Object data) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("result", data);
+        map.put("message", "OK");
+        return map;
     }
 }
