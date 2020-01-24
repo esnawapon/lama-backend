@@ -6,3 +6,5 @@ spring:
       database: test_db
       port: 32769
       host: localhost
+jwt:
+  secret: "{bcrypt}$donald"
