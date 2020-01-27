@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashMap;
 
-@RequestMapping("api/v1/words")
+@RequestMapping("api/v1/words/")
 @RestController
 public class WordController {
     @Autowired
@@ -27,21 +27,30 @@ public class WordController {
 
     @GetMapping
     public HashMap<String, Object> getAllWords(HttpServletRequest request) {
-        String userFromToken = request.getUserPrincipal().getName();
-        User currentUser = userRepository.findByUsername(userFromToken.toString());
-        HashMap<String, Object> response = generateResponse(repository.findAllByUserId(currentUser.get_id()));
-        return  response;
+        String currentUserId = findUserFromRequest(request);
+        HashMap<String, Object> response = generateResponse(repository.findAllByUserId(currentUserId));
+        return response;
     }
 
     @GetMapping(path = "{id}")
     public HashMap<String, Object> getWordById(HttpServletRequest request, @PathVariable("id") ObjectId id) {
-        HashMap<String, Object> response = generateResponse(repository.findBy_id(id));
+        String currentUserId = findUserFromRequest(request);
+        Word lookingWord = repository.findBy_idAndUserId(id, currentUserId);
+        HashMap<String, Object> response;
+        if (lookingWord != null) {
+            response = generateResponse(lookingWord);
+        } else {
+            response = generateResponse("");
+        }
         return response;
+
     }
 
     @PutMapping(path = "{id}")
-    public void updateWordById(HttpServletRequest request, @PathVariable("id") ObjectId id, @Valid @NotNull @RequestBody Word word) {
-        Word updateWord = repository.findBy_id(id);
+    public void updateWordById(HttpServletRequest request, @PathVariable("id") ObjectId id,
+            @Valid @NotNull @RequestBody Word word) {
+        String currentUserId = findUserFromRequest(request);
+        Word updateWord = repository.findBy_idAndUserId(id, currentUserId);
         if (updateWord != null) {
             updateWord.set_id(id);
             updateWord.setWord(word.word);
@@ -56,12 +65,10 @@ public class WordController {
 
     @PostMapping
     public HashMap<String, Object> createWord(HttpServletRequest request, @Valid @RequestBody Word word) {
-        String userFromToken = request.getUserPrincipal().getName();
-        User currentUser = userRepository.findByUsername(userFromToken.toString());
-
+        String currentUserId = findUserFromRequest(request);
         word.set_id(ObjectId.get());
         word.setCreatedAt(new Date());
-        word.setUserId(currentUser.get_id());
+        word.setUserId(currentUserId);
         repository.save(word);
         HashMap<String, Object> response = generateResponse(word);
         return response;
@@ -69,7 +76,8 @@ public class WordController {
 
     @DeleteMapping(path = "{id}")
     public void deleteWord(HttpServletRequest request, @PathVariable ObjectId id) {
-        repository.delete(repository.findBy_id(id));
+        String currentUserId = findUserFromRequest(request);
+        repository.delete(repository.findBy_idAndUserId(id, currentUserId));
     }
 
     private HashMap<String, Object> generateResponse(Object data) {
@@ -77,5 +85,11 @@ public class WordController {
         map.put("result", data);
         map.put("message", "OK");
         return map;
+    }
+
+    private String findUserFromRequest(HttpServletRequest request) {
+        String userFromToken = request.getUserPrincipal().getName();
+        User currentUser = userRepository.findByUsername(userFromToken);
+        return currentUser.get_id();
     }
 }

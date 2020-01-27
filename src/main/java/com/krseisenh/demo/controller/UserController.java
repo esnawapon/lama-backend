@@ -4,16 +4,13 @@ import com.krseisenh.demo.exceptions.ValidationException;
 import com.krseisenh.demo.model.User;
 import com.krseisenh.demo.repository.UserRepository;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
+
 @RequestMapping()
 @RestController
 public class UserController {
@@ -31,7 +28,7 @@ public class UserController {
         String username = user.getUsername();
         if (repository.existsByUsername(username)) {
 
-            throw new ValidationException("this username already existed");
+            throw new ValidationException("this $username already existed");
 
         }
 
