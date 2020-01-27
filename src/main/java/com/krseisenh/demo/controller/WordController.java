@@ -4,6 +4,8 @@ import com.krseisenh.demo.model.User;
 import com.krseisenh.demo.model.Word;
 import com.krseisenh.demo.repository.UserRepository;
 import com.krseisenh.demo.repository.WordRepository;
+import com.krseisenh.demo.service.WordService;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,8 @@ import java.util.HashMap;
 @RestController
 public class WordController {
     @Autowired
-    private WordRepository repository;
+    private WordService service;
+    private WordRepository wordRepository;
     private UserRepository userRepository;
 
     public WordController(UserRepository userRepository) {
@@ -28,7 +31,7 @@ public class WordController {
     @GetMapping
     public HashMap<String, Object> getAllWords(HttpServletRequest request) {
         String currentUserId = findUserFromRequest(request);
-        HashMap<String, Object> response = generateResponse(repository.findAllByUserId(currentUserId));
+        HashMap<String, Object> response = generateResponse(service.getWords(currentUserId));
         return response;
     }
 
@@ -36,7 +39,7 @@ public class WordController {
     public HashMap<String, Object> getWordById(HttpServletRequest request, @PathVariable("id") ObjectId id) {
         String currentUserId = findUserFromRequest(request);
         try {
-            Word lookingWord = repository.findBy_idAndUserId(id, currentUserId);
+            Word lookingWord = service.getWord(id, currentUserId);
             HashMap<String, Object> response = generateResponse(lookingWord);
             return response;
         } catch (Exception e) {
@@ -50,7 +53,7 @@ public class WordController {
         word.set_id(ObjectId.get());
         word.setCreatedAt(new Date());
         word.setUserId(currentUserId);
-        repository.save(word);
+        wordRepository.save(word);
         HashMap<String, Object> response = generateResponse(word);
         return response;
     }
@@ -60,14 +63,14 @@ public class WordController {
             @Valid @NotNull @RequestBody Word word) {
         String currentUserId = findUserFromRequest(request);
         try {
-            Word updateWord = repository.findBy_idAndUserId(id, currentUserId);
+            Word updateWord = service.getWord(id, currentUserId);
             if (updateWord != null) {
                 updateWord.set_id(id);
                 updateWord.setWord(word.word);
                 updateWord.setDescription(word.description);
                 updateWord.setQuote(word.quote);
                 updateWord.setUpdatedAt(new Date());
-                repository.save(updateWord);
+                wordRepository.save(updateWord);
             } else {
                 return;
             }
@@ -80,16 +83,23 @@ public class WordController {
     public void deleteWord(HttpServletRequest request, @PathVariable ObjectId id) {
         String currentUserId = findUserFromRequest(request);
         try {
-            repository.delete(repository.findBy_idAndUserId(id, currentUserId));
+            wordRepository.delete(service.getWord(id, currentUserId));
         } catch (Exception e) {
             throw e;
         }
     }
 
     private HashMap<String, Object> generateResponse(Object data) {
+        String messageRes;
+        if (data == null) {
+            messageRes = "Nothing Found";
+        } else {
+            messageRes = "OK";
+        }
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("result", data);
-        map.put("message", "OK");
+        map.put("message", messageRes);
         return map;
     }
 
