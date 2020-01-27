@@ -1,6 +1,6 @@
 package com.krseisenh.demo.controller;
 
-import com.krseisenh.demo.exceptions.ValidationException;
+import com.krseisenh.demo.exception.ValidationException;
 import com.krseisenh.demo.model.User;
 import com.krseisenh.demo.repository.UserRepository;
 import org.bson.types.ObjectId;

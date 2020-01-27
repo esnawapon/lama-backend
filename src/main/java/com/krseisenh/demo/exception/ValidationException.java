@@ -1,4 +1,4 @@
-package com.krseisenh.demo.exceptions;
+package com.krseisenh.demo.exception;
 
 public class ValidationException extends RuntimeException {
 
