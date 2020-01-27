@@ -35,36 +35,17 @@ public class WordController {
     @GetMapping(path = "{id}")
     public HashMap<String, Object> getWordById(HttpServletRequest request, @PathVariable("id") ObjectId id) {
         String currentUserId = findUserFromRequest(request);
-        Word lookingWord = repository.findBy_idAndUserId(id, currentUserId);
-        HashMap<String, Object> response;
-        if (lookingWord != null) {
-            response = generateResponse(lookingWord);
-        } else {
-            response = generateResponse("");
-        }
-        return response;
-
-    }
-
-    @PutMapping(path = "{id}")
-    public void updateWordById(HttpServletRequest request, @PathVariable("id") ObjectId id,
-            @Valid @NotNull @RequestBody Word word) {
-        String currentUserId = findUserFromRequest(request);
-        Word updateWord = repository.findBy_idAndUserId(id, currentUserId);
-        if (updateWord != null) {
-            updateWord.set_id(id);
-            updateWord.setWord(word.word);
-            updateWord.setDescription(word.description);
-            updateWord.setQuote(word.quote);
-            updateWord.setUpdatedAt(new Date());
-            repository.save(updateWord);
-        } else {
-            return;
+        try {
+            Word lookingWord = repository.findBy_idAndUserId(id, currentUserId);
+            HashMap<String, Object> response = generateResponse(lookingWord);
+            return response;
+        } catch (Exception e) {
+            throw e;
         }
     }
 
     @PostMapping
-    public HashMap<String, Object> createWord(HttpServletRequest request, @Valid @RequestBody Word word) {
+    public HashMap<String, Object> createWord(HttpServletRequest request, @Valid @NotNull @RequestBody Word word) {
         String currentUserId = findUserFromRequest(request);
         word.set_id(ObjectId.get());
         word.setCreatedAt(new Date());
@@ -74,10 +55,35 @@ public class WordController {
         return response;
     }
 
+    @PutMapping(path = "{id}")
+    public void updateWordById(HttpServletRequest request, @PathVariable("id") ObjectId id,
+            @Valid @NotNull @RequestBody Word word) {
+        String currentUserId = findUserFromRequest(request);
+        try {
+            Word updateWord = repository.findBy_idAndUserId(id, currentUserId);
+            if (updateWord != null) {
+                updateWord.set_id(id);
+                updateWord.setWord(word.word);
+                updateWord.setDescription(word.description);
+                updateWord.setQuote(word.quote);
+                updateWord.setUpdatedAt(new Date());
+                repository.save(updateWord);
+            } else {
+                return;
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     @DeleteMapping(path = "{id}")
     public void deleteWord(HttpServletRequest request, @PathVariable ObjectId id) {
         String currentUserId = findUserFromRequest(request);
-        repository.delete(repository.findBy_idAndUserId(id, currentUserId));
+        try {
+            repository.delete(repository.findBy_idAndUserId(id, currentUserId));
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private HashMap<String, Object> generateResponse(Object data) {
@@ -89,7 +95,11 @@ public class WordController {
 
     private String findUserFromRequest(HttpServletRequest request) {
         String userFromToken = request.getUserPrincipal().getName();
-        User currentUser = userRepository.findByUsername(userFromToken);
-        return currentUser.get_id();
+        try {
+            User currentUser = userRepository.findByUsername(userFromToken);
+            return currentUser.get_id();
+        } catch (NullPointerException e) {
+            throw e;
+        }
     }
 }

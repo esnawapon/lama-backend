@@ -12,12 +12,4 @@ class DemoApplicationTests {
 	void contextLoads() {
 	}
 
-	@MockBean
-	private WordRepository repository;
-
-	@Test
-	public void getAllWords(){
-
-	}
-
 }
