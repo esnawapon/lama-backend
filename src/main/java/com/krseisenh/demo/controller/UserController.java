@@ -4,6 +4,7 @@ import com.krseisenh.demo.exception.ValidationException;
 import com.krseisenh.demo.model.User;
 import com.krseisenh.demo.repository.UserRepository;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +16,10 @@ import java.util.HashMap;
 @RestController
 public class UserController {
 
-    final private UserRepository repository;
+    @Autowired
+    private UserRepository repository;
 
     // private HashData hashData = new HashData();
-
-    public UserController(UserRepository repository) {
-        this.repository = repository;
-    }
 
     @PostMapping("/api/v1/user")
     public Boolean create(@RequestBody User user) throws NoSuchAlgorithmException {

@@ -21,12 +21,10 @@ import java.util.HashMap;
 public class WordController {
     @Autowired
     private WordService service;
+    @Autowired
     private WordRepository wordRepository;
+    @Autowired
     private UserRepository userRepository;
-
-    public WordController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @GetMapping
     public HashMap<String, Object> getAllWords(HttpServletRequest request) {
